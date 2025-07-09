@@ -1,0 +1,114 @@
+@use 'variables' as vars;
+@use 'mixins' as mx;
+
+.watchlist {
+  width: 100%;
+  padding: vars.$spacing-10 vars.$spacing-6;
+
+  &__title {
+    font-size: vars.$font-size-3xl;
+    font-weight: 700;
+    margin-bottom: vars.$spacing-8;
+    color: vars.$text-light;
+    text-align: center;
+  }
+
+  &__grid {
+    display: grid;
+    gap: vars.$spacing-6;
+    width: 100%; 
+    
+    grid-template-columns: 1fr;
+    
+    @include mx.respond-to('sm') {
+      grid-template-columns: 1fr;
+    }
+    
+    @include mx.respond-to('md') {
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      max-width: 100%;
+    }
+    
+    @include mx.respond-to('lg') {
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+  }
+
+  // Styles pour l'état vide
+  &-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 60vh;
+    gap: vars.$spacing-6;
+    width: 100%;
+
+    &__message {
+      font-size: vars.$font-size-lg;
+      color: vars.$text-medium;
+      max-width: 400px;
+      margin: 0;
+    }
+
+    &__button {
+      background-color: vars.$primary-blue;
+      color: vars.$text-light;
+      border: none;
+      padding: vars.$spacing-3 vars.$spacing-6;
+      border-radius: vars.$border-radius;
+      font-size: vars.$font-size-base;
+      font-weight: 600;
+      cursor: pointer;
+      transition: vars.$transition;
+      text-decoration: none;
+      display: inline-block;
+
+      &:hover {
+        background-color: vars.$primary-blue-hover;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(vars.$primary-blue, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+}
+
+.crypto-card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.loading-message,
+.error-message {
+  text-align: center;
+  padding: vars.$spacing-8;
+  font-size: vars.$font-size-lg;
+  width: 100%;
+  margin: 0;
+}
+
+.error-message {
+  color: vars.$error-color;
+}
+
+// Responsive pour petits écrans
+@media (max-width: 480px) {
+  .watchlist {
+    padding: vars.$spacing-6 vars.$spacing-4;
+    
+    &__title {
+      font-size: vars.$font-size-2xl;
+      margin-bottom: vars.$spacing-6;
+    }
+    
+    &__grid {
+      gap: vars.$spacing-4;
+    }
+  }
+}

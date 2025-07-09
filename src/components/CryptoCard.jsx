@@ -1,12 +1,25 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
-export default function CryptoCard({ crypto }) {
-  const variation = crypto.price_change_percentage_24h
-  const isPositive = variation >= 0
+export default function CryptoCard({ crypto, isFavorite, toggleFavorite }) {
+  const variation = crypto.price_change_percentage_24h;
+  const isPositive = variation >= 0;
+
+  const handleFavoriteClick = (e) => {
+    e.preventDefault();
+    toggleFavorite(crypto.id);
+  };
 
   return (
     <Link to={`/crypto/${crypto.id}`} className="crypto-card">
       <div className="crypto-card__content">
+        <button
+          onClick={handleFavoriteClick}
+          className={`crypto-card__favorite-btn ${isFavorite ? 'crypto-card__favorite-btn--active' : ''}`}
+          aria-label="Ajouter aux favoris"
+        >
+          {isFavorite ? '★' : '☆'}
+        </button>
+
         <header className="crypto-card__header">
           <img src={crypto.image} alt={crypto.name} className="crypto-card__image" />
           <div className="crypto-card__info">
@@ -28,5 +41,5 @@ export default function CryptoCard({ crypto }) {
         </div>
       </div>
     </Link>
-  )
+  );
 }

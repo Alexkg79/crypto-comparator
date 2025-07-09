@@ -1,20 +1,20 @@
-@import 'variables';
+@use 'variables' as vars;
 
 .details-container {
   max-width: 960px;
   margin: 0 auto;
-  padding: $spacing-6;
+  padding: vars.$spacing-6;
 }
 
 .details-header {
-  background-color: $dark-bg-secondary;
-  border-radius: $border-radius;
-  border: 1px solid $border-color;
-  padding: $spacing-6;
-  margin-bottom: $spacing-8;
+  background-color: vars.$dark-bg-secondary;
+  border-radius: vars.$border-radius;
+  border: 1px solid vars.$border-color;
+  padding: vars.$spacing-6;
+  margin-bottom: vars.$spacing-8;
   display: flex;
   align-items: center;
-  gap: $spacing-6;
+  gap: vars.$spacing-6;
 
   &__image {
     width: 64px;
@@ -23,21 +23,21 @@
 
   &__info {
     h2 {
-      font-size: $font-size-2xl;
+      font-size: vars.$font-size-2xl;
       font-weight: 700;
-      margin: 0 0 $spacing-1 0;
+      margin: 0 0 vars.$spacing-1 0;
       span {
-        color: $text-medium;
+        color: vars.$text-medium;
         text-transform: uppercase;
       }
     }
     p {
       margin: 0;
-      color: $text-light;
-      font-size: $font-size-lg;
+      color: vars.$text-light;
+      font-size: vars.$font-size-lg;
       &.market-cap {
         font-size: 0.875rem;
-        color: $text-medium;
+        color: vars.$text-medium;
       }
     }
   }
@@ -45,57 +45,57 @@
 
 .time-selector {
   display: flex;
-  gap: $spacing-2;
-  margin-bottom: $spacing-6;
+  gap: vars.$spacing-2;
+  margin-bottom: vars.$spacing-6;
 
   &__button {
-    padding: $spacing-2 $spacing-4;
+    padding: vars.$spacing-2 vars.$spacing-4;
     border: none;
     border-radius: 0.5rem;
     font-weight: 500;
     cursor: pointer;
-    transition: $transition;
+    transition: vars.$transition;
 
     &--inactive {
-      background-color: $border-color;
-      color: $text-light;
+      background-color: vars.$border-color;
+      color: vars.$text-light;
       &:hover {
-        background-color: $primary-blue-hover;
+        background-color: vars.$primary-blue-hover;
       }
     }
     &--active {
-      background-color: $primary-blue;
-      color: $text-light;
-      box-shadow: 0 4px 14px 0 rgba($primary-blue, 0.39);
+      background-color: vars.$primary-blue;
+      color: vars.$text-light;
+      box-shadow: 0 4px 14px 0 rgba(vars.$primary-blue, 0.39);
     }
   }
 }
 
 .chart-container {
-  background-color: $dark-bg-primary;
-  padding: $spacing-5;
-  border-radius: $border-radius;
-  border: 1px solid $border-color;
-  margin-bottom: $spacing-6;
+  background-color: vars.$dark-bg-primary;
+  padding: vars.$spacing-5;
+  border-radius: vars.$border-radius;
+  border: 1px solid vars.$border-color;
+  margin-bottom: vars.$spacing-6;
 }
 
 .about-section {
-  background-color: $dark-bg-secondary;
-  padding: $spacing-4;
-  border-radius: $border-radius;
-  border: 1px solid $border-color;
+  background-color: vars.$dark-bg-secondary;
+  padding: vars.$spacing-4;
+  border-radius: vars.$border-radius;
+  border: 1px solid vars.$border-color;
 
   &__title {
-    font-size: $font-size-lg;
+    font-size: vars.$font-size-lg;
     font-weight: 600;
     margin-top: 0;
-    margin-bottom: $spacing-2;
-    color: $text-light;
+    margin-bottom: vars.$spacing-2;
+    color: vars.$text-light;
   }
   
   &__description {
     font-size: 0.875rem;
-    color: $text-medium;
+    color: vars.$text-medium;
     line-height: 1.5;
   }
 }

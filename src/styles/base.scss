@@ -1,19 +1,55 @@
-@import 'variables';
+@use 'variables' as vars;
 
-body {
-  background-color: $dark-bg-primary;
-  color: $text-light;
-  font-family: $font-family-sans;
+* {
   margin: 0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-:root{
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  width: 100%;
+  background-color: vars.$dark-bg-primary;
+  color: vars.$text-light;
+  font-family: vars.$font-family-sans;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
-  background-color: $dark-bg-primary;
-  
+  flex-direction: column;
+}
+
+.app-root {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: vars.$dark-bg-primary;
+}
+
+header {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.main-container,
+.main-content {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+  flex: 1;
 }
 
 a {
@@ -24,10 +60,11 @@ a {
 .loading-message,
 .error-message {
   text-align: center;
-  padding: $spacing-8;
-  font-size: $font-size-lg;
+  padding: vars.$spacing-8;
+  font-size: vars.$font-size-lg;
+  width: 100%;
 }
 
 .error-message {
-  color: $error-color;
+  color: vars.$error-color;
 }

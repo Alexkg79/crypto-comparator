@@ -1,0 +1,42 @@
+@use 'variables' as vars;
+
+.app-header {
+  padding: vars.$spacing-4 vars.$spacing-6;
+  background-color: vars.$dark-bg-secondary;
+  border-bottom: 1px solid vars.$border-color;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+
+  &__container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__nav {
+    display: flex;
+    gap: vars.$spacing-6;
+  }
+}
+
+.nav-link {
+  color: vars.$text-medium;
+  font-weight: 600;
+  font-size: vars.$font-size-lg;
+  padding-bottom: vars.$spacing-1;
+  border-bottom: 2px solid transparent;
+  transition: vars.$transition;
+
+  &:hover {
+    color: vars.$text-light;
+  }
+
+  &.active {
+    color: vars.$primary-blue;
+    border-bottom-color: vars.$primary-blue;
+  }
+}

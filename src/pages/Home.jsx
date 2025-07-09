@@ -1,34 +1,36 @@
-import { useEffect, useState } from 'react'
-import { fetchTopCryptos } from '../services/api'
-import CryptoCard from '../components/CryptoCard'
-import '../styles/main.scss'
+import { useEffect, useState } from 'react';
+import { fetchTopCryptos } from '../services/api';
+import CryptoCard from '../components/CryptoCard';
+import { useFavorites } from '../hooks/useFavorites';
+import '../styles/main.scss';
 
 export default function Home() {
-  const [cryptos, setCryptos] = useState([])
-  const [search, setSearch] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [cryptos, setCryptos] = useState([]);
+  const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [favorites, toggleFavorite] = useFavorites();
 
   const loadData = () => {
     fetchTopCryptos()
       .then(setCryptos)
       .catch(err => setError(err.message))
-      .finally(() => setLoading(false))
-  }
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    loadData()
-    const interval = setInterval(loadData, 60000) // refresh toutes les 60s
-    return () => clearInterval(interval)
-  }, [])
+    loadData();
+    const interval = setInterval(loadData, 60000); // refresh toutes les 60s
+    return () => clearInterval(interval);
+  }, []);
 
-  const filtered = cryptos.filter(crypto =>
+  const filteredCryptos = cryptos.filter(crypto =>
     crypto.name.toLowerCase().includes(search.toLowerCase()) ||
     crypto.symbol.toLowerCase().includes(search.toLowerCase())
-  )
+  );
 
-  if (loading) return <p className="loading-message">Chargement...</p>
-  if (error) return <p className="error-message">Erreur : {error}</p>
+  if (loading) return <p className="loading-message">Chargement...</p>;
+  if (error) return <p className="error-message">Erreur : {error}</p>;
 
   return (
     <div className="home-container">
@@ -45,10 +47,15 @@ export default function Home() {
       </div>
 
       <div className="home-container__grid">
-        {filtered.map(crypto => (
-          <CryptoCard key={crypto.id} crypto={crypto} />
+        {filteredCryptos.map(crypto => (
+          <CryptoCard
+            key={crypto.id}
+            crypto={crypto}
+            isFavorite={favorites.includes(crypto.id)}
+            toggleFavorite={toggleFavorite}
+          />
         ))}
       </div>
     </div>
-  )
+  );
 }
