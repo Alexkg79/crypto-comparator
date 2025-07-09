@@ -10,6 +10,7 @@ import {
   Legend,
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
+import Converter from '../components/Converter';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend)
 
@@ -101,6 +102,12 @@ export default function CryptoDetails() {
           }} />
         )}
       </div>
+
+      <Converter
+        cryptoSymbol={crypto.symbol.toUpperCase()}
+        fiatSymbol="USD"
+        currentPrice={crypto.market_data.current_price.usd}
+      />
 
       <section className="about-section">
         <h3 className="about-section__title">📘 À propos</h3>

@@ -1,0 +1,57 @@
+@use 'variables' as vars;
+
+.converter {
+  margin-top: vars.$spacing-8;
+  margin-bottom: vars.$spacing-8;
+
+  &__title {
+    font-size: vars.$font-size-lg;
+    font-weight: 600;
+    margin-bottom: vars.$spacing-4;
+  }
+
+  &__inputs {
+    background-color: vars.$dark-bg-secondary;
+    border: 1px solid vars.$border-color;
+    border-radius: vars.$border-radius;
+    overflow: hidden;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: vars.$spacing-4;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid vars.$border-color;
+    }
+  }
+
+  &__symbol {
+    font-weight: 500;
+    color: vars.$text-medium;
+  }
+
+  &__input {
+    background: none;
+    border: none;
+    color: vars.$text-light;
+    text-align: right;
+    font-size: vars.$font-size-lg;
+    font-weight: 600;
+    width: 70%;
+
+    &:focus {
+      outline: none;
+    }
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+}
