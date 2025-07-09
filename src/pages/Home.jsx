@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchTopCryptos } from '../services/api'
 import CryptoCard from '../components/CryptoCard'
+import '../styles/main.scss'
 
 export default function Home() {
   const [cryptos, setCryptos] = useState([])
@@ -26,20 +27,24 @@ export default function Home() {
     crypto.symbol.toLowerCase().includes(search.toLowerCase())
   )
 
-  if (loading) return <p className="text-center text-white">Chargement...</p>
-  if (error) return <p className="text-center text-red-500">Erreur : {error}</p>
+  if (loading) return <p className="loading-message">Chargement...</p>
+  if (error) return <p className="error-message">Erreur : {error}</p>
 
   return (
-    <div className="p-4">
-      <input
-        type="text"
-        placeholder="Rechercher une crypto (ex : BTC, ETH)..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        className="w-full mb-6 p-2 rounded bg-gray-700 text-white placeholder-gray-400"
-      />
+    <div className="home-container">
+      <h1 className="home-container__title">📊 Top 20 cryptomonnaies</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="home-container__search">
+        <input
+          type="text"
+          placeholder="🔍 Rechercher (BTC, ETH...)"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="home-container__search-bar"
+        />
+      </div>
+
+      <div className="home-container__grid">
         {filtered.map(crypto => (
           <CryptoCard key={crypto.id} crypto={crypto} />
         ))}

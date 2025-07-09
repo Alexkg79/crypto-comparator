@@ -11,23 +11,19 @@ import {
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 
-// Enregistrement des composants dans Chart.js
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend)
 
 export default function CryptoDetails() {
-  const { id } = useParams() // Récupère l'ID de la crypto depuis l'URL
-  // États pour les données
+  const { id } = useParams()
   const [crypto, setCrypto] = useState(null)
   const [chartData, setChartData] = useState(null)
   const [days, setDays] = useState(7)
   const [loading, setLoading] = useState(true)
 
-  // Chargement des données à chaque changement d'ID ou de période
   useEffect(() => {
     async function fetchData() {
       setLoading(true)
       try {
-        // Requêtes API : infos générales + historique du prix
         const [coinRes, marketRes] = await Promise.all([
           fetch(`https://api.coingecko.com/api/v3/coins/${id}`).then(res => res.json()),
           fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${days}`)
@@ -35,17 +31,13 @@ export default function CryptoDetails() {
         ])
         setCrypto(coinRes)
 
-        // Formatage des labels (dates ou heures selon le cas)
         const labels = marketRes.prices.map(([timestamp]) =>
           new Date(timestamp).toLocaleDateString('fr-FR', days === 1
             ? { hour: '2-digit', minute: '2-digit' }
             : { month: 'short', day: 'numeric' })
         )
-
-        // Récupération des prix
         const prices = marketRes.prices.map(([, price]) => price)
-
-        // Structure des données pour Chart.js
+        
         setChartData({
           labels,
           datasets: [
@@ -70,60 +62,50 @@ export default function CryptoDetails() {
     fetchData()
   }, [id, days])
   
-  // Affichage d'un message en attendant les données
-  if (!crypto || !chartData) return <p className="text-center">Chargement des données...</p>
+  if (!crypto || !chartData) return <p className="loading-message">Chargement des données...</p>
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <div className="flex items-center gap-4 mb-6">
-        <img src={crypto.image.large} alt={crypto.name} className="w-12 h-12" />
-        <h2 className="text-2xl font-bold">{crypto.name} ({crypto.symbol.toUpperCase()})</h2>
-      </div>
+    <div className="details-container">
+      <header className="details-header">
+        <img src={crypto.image.large} alt={crypto.name} className="details-header__image" />
+        <div className="details-header__info">
+          <h2>{crypto.name} <span>({crypto.symbol.toUpperCase()})</span></h2>
+          <p>💰 Prix : ${crypto.market_data.current_price.usd.toLocaleString()}</p>
+          <p className="market-cap">🏦 Capitalisation : ${crypto.market_data.market_cap.usd.toLocaleString()}</p>
+        </div>
+      </header>
 
-      <div className="mb-4 flex gap-4">
+      <div className="time-selector">
         {[1, 7, 30].map(val => (
           <button
             key={val}
             onClick={() => setDays(val)}
-            className={`px-4 py-2 rounded-full ${
-              days === val ? 'bg-blue-500 text-white' : 'bg-gray-700 text-gray-300'
-            } hover:bg-blue-600 transition`}
+            className={`time-selector__button ${days === val ? 'time-selector__button--active' : 'time-selector__button--inactive'}`}
           >
             {val === 1 ? '1 jour' : `${val} jours`}
           </button>
         ))}
       </div>
 
-      <div className="bg-gray-800 p-4 rounded-xl shadow mb-6">
+      <div className="chart-container">
         {loading ? (
-          <p className="text-center">Chargement du graphique...</p>
+          <p className="loading-message">Chargement du graphique...</p>
         ) : (
           <Line data={chartData} options={{
             responsive: true,
             scales: {
-              y: {
-                ticks: { color: '#fff' },
-                grid: { color: '#444' }
-              },
-              x: {
-                ticks: { color: '#fff' },
-                grid: { display: false }
-              }
+              y: { ticks: { color: '#f3f4f6' }, grid: { color: '#4b5563' } },
+              x: { ticks: { color: '#f3f4f6' }, grid: { display: false } }
             },
-            plugins: {
-              legend: {
-                labels: {
-                  color: '#fff'
-                }
-              }
-            }
+            plugins: { legend: { labels: { color: '#f3f4f6' } } }
           }} />
         )}
       </div>
 
-      <p className="text-gray-300">{crypto.description.en?.split('. ')[0]}.</p>
-      <p className="mt-4">Prix actuel : ${crypto.market_data.current_price.usd.toLocaleString()}</p>
-      <p>Capitalisation : ${crypto.market_data.market_cap.usd.toLocaleString()}</p>
+      <section className="about-section">
+        <h3 className="about-section__title">📘 À propos</h3>
+        <p className="about-section__description">{crypto.description.en?.split('. ')[0]}.</p>
+      </section>
     </div>
   )
 }

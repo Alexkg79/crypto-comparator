@@ -1,0 +1,72 @@
+@import 'variables';
+
+.crypto-card {
+  display: block;
+  height: 100%;
+
+  &__content {
+    background-color: $dark-bg-secondary;
+    padding: $spacing-5;
+    border-radius: $border-radius;
+    border: 1px solid $border-color;
+    box-shadow: $box-shadow;
+    transition: $transition;
+    height: 100%;
+
+    &:hover {
+      background-color: $dark-bg-hover;
+      transform: translateY(-5px);
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+    margin-bottom: $spacing-4;
+  }
+
+  &__image {
+    width: 40px;
+    height: 40px;
+  }
+
+  &__info {
+    &-name {
+      font-size: $font-size-lg;
+      font-weight: 700;
+      color: $text-light;
+    }
+    &-symbol {
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      color: $text-medium;
+    }
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    font-size: 0.875rem;
+
+    p {
+      margin: 0;
+      color: $text-medium;
+    }
+
+    span {
+      font-weight: 500;
+      color: $text-light;
+    }
+  }
+  
+  &__variation {
+    &--positive {
+      color: $success-color !important;
+    }
+    &--negative {
+      color: $error-color !important;
+    }
+  }
+}

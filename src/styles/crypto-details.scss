@@ -1,0 +1,101 @@
+@import 'variables';
+
+.details-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: $spacing-6;
+}
+
+.details-header {
+  background-color: $dark-bg-secondary;
+  border-radius: $border-radius;
+  border: 1px solid $border-color;
+  padding: $spacing-6;
+  margin-bottom: $spacing-8;
+  display: flex;
+  align-items: center;
+  gap: $spacing-6;
+
+  &__image {
+    width: 64px;
+    height: 64px;
+  }
+
+  &__info {
+    h2 {
+      font-size: $font-size-2xl;
+      font-weight: 700;
+      margin: 0 0 $spacing-1 0;
+      span {
+        color: $text-medium;
+        text-transform: uppercase;
+      }
+    }
+    p {
+      margin: 0;
+      color: $text-light;
+      font-size: $font-size-lg;
+      &.market-cap {
+        font-size: 0.875rem;
+        color: $text-medium;
+      }
+    }
+  }
+}
+
+.time-selector {
+  display: flex;
+  gap: $spacing-2;
+  margin-bottom: $spacing-6;
+
+  &__button {
+    padding: $spacing-2 $spacing-4;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: $transition;
+
+    &--inactive {
+      background-color: $border-color;
+      color: $text-light;
+      &:hover {
+        background-color: $primary-blue-hover;
+      }
+    }
+    &--active {
+      background-color: $primary-blue;
+      color: $text-light;
+      box-shadow: 0 4px 14px 0 rgba($primary-blue, 0.39);
+    }
+  }
+}
+
+.chart-container {
+  background-color: $dark-bg-primary;
+  padding: $spacing-5;
+  border-radius: $border-radius;
+  border: 1px solid $border-color;
+  margin-bottom: $spacing-6;
+}
+
+.about-section {
+  background-color: $dark-bg-secondary;
+  padding: $spacing-4;
+  border-radius: $border-radius;
+  border: 1px solid $border-color;
+
+  &__title {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: $spacing-2;
+    color: $text-light;
+  }
+  
+  &__description {
+    font-size: 0.875rem;
+    color: $text-medium;
+    line-height: 1.5;
+  }
+}
