@@ -7,9 +7,9 @@
 }
 
 .details-header {
-  background-color: vars.$dark-bg-secondary;
+  background-color: var(--bg-secondary);
   border-radius: vars.$border-radius;
-  border: 1px solid vars.$border-color;
+  border: 1px solid var(--border-color);
   padding: vars.$spacing-6;
   margin-bottom: vars.$spacing-8;
   display: flex;
@@ -27,17 +27,17 @@
       font-weight: 700;
       margin: 0 0 vars.$spacing-1 0;
       span {
-        color: vars.$text-medium;
+        color: var(--text-secondary);
         text-transform: uppercase;
       }
     }
     p {
       margin: 0;
-      color: vars.$text-light;
+      color: var(--text-primary);
       font-size: vars.$font-size-lg;
       &.market-cap {
         font-size: 0.875rem;
-        color: vars.$text-medium;
+        color: var(--text-secondary);
       }
     }
   }
@@ -57,45 +57,45 @@
     transition: vars.$transition;
 
     &--inactive {
-      background-color: vars.$border-color;
-      color: vars.$text-light;
+      background-color: var(--border-color);
+      color: var(--text-primary);
       &:hover {
-        background-color: vars.$primary-blue-hover;
+        background-color: var(--primary-blue)-hover;
       }
     }
     &--active {
-      background-color: vars.$primary-blue;
-      color: vars.$text-light;
-      box-shadow: 0 4px 14px 0 rgba(vars.$primary-blue, 0.39);
+      background-color: var(--primary-blue);
+      color: var(--text-primary);
+      box-shadow: 0 4px 14px 0 rgba(var(--primary-blue), 0.39);
     }
   }
 }
 
 .chart-container {
-  background-color: vars.$dark-bg-primary;
+  background-color: var(--bg-primary);
   padding: vars.$spacing-5;
   border-radius: vars.$border-radius;
-  border: 1px solid vars.$border-color;
+  border: 1px solid var(--border-color);
   margin-bottom: vars.$spacing-6;
 }
 
 .about-section {
-  background-color: vars.$dark-bg-secondary;
+  background-color: var(--bg-secondary);
   padding: vars.$spacing-4;
   border-radius: vars.$border-radius;
-  border: 1px solid vars.$border-color;
+  border: 1px solid var(--border-color);
 
   &__title {
     font-size: vars.$font-size-lg;
     font-weight: 600;
     margin-top: 0;
     margin-bottom: vars.$spacing-2;
-    color: vars.$text-light;
+    color: var(--text-primary);
   }
   
   &__description {
     font-size: 0.875rem;
-    color: vars.$text-medium;
+    color: var(--text-secondary);
     line-height: 1.5;
   }
 }

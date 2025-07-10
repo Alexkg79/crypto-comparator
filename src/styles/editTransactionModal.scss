@@ -11,12 +11,12 @@
 }
 
 .modal {
-  background: vars.$dark-bg-primary;
+  background: var(--bg-primary);
   padding: vars.$spacing-8;
   border-radius: vars.$spacing-3;
   width: 100%;
   max-width: 400px;
-  color: vars.$text-light;
+  color: var(--text-primary);
 }
 
 .modal label {
@@ -30,8 +30,8 @@
   margin-top: vars.$spacing-1;
   border-radius: vars.$border-radius;
   border: none;
-  background: vars.$dark-bg-secondary;
-  color: vars.$text-light;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .modal-buttons {

@@ -19,21 +19,21 @@
     width: 95%;
     padding: vars.$spacing-4 vars.$spacing-5;
     border-radius: vars.$border-radius;
-    background-color: vars.$dark-bg-primary;
-    color: vars.$text-light;
-    border: 1px solid vars.$border-color;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
     font-size: vars.$font-size-base;
     margin-bottom: vars.$spacing-8;
     transition: vars.$transition;
 
     &::placeholder {
-      color: vars.$text-medium;
+      color: var(--text-secondary);
     }
 
     &:focus {
       outline: none;
-      border-color: vars.$primary-blue;
-      box-shadow: 0 0 0 2px vars.$primary-blue;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 2px var(--primary-blue);
     }
   }
 
@@ -71,7 +71,7 @@
   gap: vars.$spacing-4;
   
   p {
-    color: vars.$text-medium;
+    color: var(--text-secondary);
     font-size: vars.$font-size-lg;
   }
 }
@@ -86,7 +86,7 @@
   gap: vars.$spacing-3;
   
   p {
-    color: vars.$text-medium;
+    color: var(--text-secondary);
     font-size: vars.$font-size-base;
   }
 }
@@ -95,8 +95,8 @@
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid vars.$dark-bg-secondary;
-  border-top: 4px solid vars.$primary-blue;
+  border: 4px solid var(--bg-secondary);
+  border-top: 4px solid var(--primary-blue);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -105,8 +105,8 @@
 .spinner-small {
   width: 24px;
   height: 24px;
-  border: 3px solid vars.$dark-bg-secondary;
-  border-top: 3px solid vars.$primary-blue;
+  border: 3px solid var(--bg-secondary);
+  border-top: 3px solid var(--primary-blue);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -122,12 +122,12 @@
   text-align: center;
   padding: vars.$spacing-8;
   margin-top: vars.$spacing-6;
-  background-color: vars.$dark-bg-secondary;
+  background-color: var(--bg-secondary);
   border-radius: vars.$border-radius;
-  border: 1px solid vars.$primary-blue;
+  border: 1px solid var(--primary-blue);
   
   p {
-    color: vars.$text-light;
+    color: var(--text-primary);
     font-size: vars.$font-size-lg;
     font-weight: 600;
   }
@@ -140,7 +140,7 @@
   margin-top: vars.$spacing-6;
   
   p {
-    color: vars.$text-medium;
+    color: var(--text-secondary);
     font-size: vars.$font-size-lg;
   }
 }

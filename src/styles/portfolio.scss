@@ -14,18 +14,18 @@
   th, td {
     padding: vars.$spacing-3 vars.$spacing-4;
     text-align: left;
-    border-bottom: 1px solid vars.$border-color;
+    border-bottom: 1px solid var(--border-color);
   }
 
   thead th {
-    color: vars.$text-medium;
+    color: var(--text-secondary);
     font-size: 0.875rem;
     text-transform: uppercase;
   }
 
   tbody tr {
     &:hover {
-      background-color: vars.$dark-bg-secondary;
+      background-color: var(--bg-secondary);
     }
   }
 
@@ -51,15 +51,15 @@
 
   .summary-box {
     flex: 1 1 300px;
-    border: 2px solid #444;
-    border-radius: 12px;
+    border-radius: vars.$border-radius;
+    border: 1px solid var(--border-color);
     padding: 1.5rem;
-    background-color: #1f2937;
+    background-color: var(--bg-primary);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
     h2 {
       font-size: 1.2rem;
-      color: #ddd;
+      color: var(--text-primary);
       margin-bottom: 0.5rem;
     }
 
@@ -77,7 +77,7 @@
 
       span {
         font-size: 1rem;
-        color: #aaa;
+        color: var(--text-secondary);
         margin-left: 0.5rem;
       }
 

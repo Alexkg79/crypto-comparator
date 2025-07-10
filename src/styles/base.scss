@@ -13,8 +13,8 @@ html {
 
 body {
   width: 100%;
-  background-color: vars.$dark-bg-primary;
-  color: vars.$text-light;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   font-family: vars.$font-family-sans;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -34,7 +34,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: vars.$dark-bg-primary;
+  background-color: var(--bg-primary);
 }
 
 header {
@@ -66,5 +66,5 @@ a {
 }
 
 .error-message {
-  color: vars.$error-color;
+  color: var(--error-color);
 }

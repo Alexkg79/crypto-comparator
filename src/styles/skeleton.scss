@@ -1,4 +1,4 @@
-@use 'variables';
+@use 'variables' as vars;
 
 @keyframes shimmer {
   100% {
@@ -7,7 +7,7 @@
 }
 
 .skeleton {
-  background-color: variables.$dark-bg-hover;
+  background-color: var(--bg-hover);
   position: relative;
   overflow: hidden;
 
@@ -19,23 +19,23 @@
     width: 100%;
     height: 100%;
     transform: translateX(-100%);
-    background: linear-gradient(90deg, transparent, rgba(variables.$text-medium, 0.1), transparent);
+    background: linear-gradient(90deg, transparent, rgba(vars.$dark-text-secondary, 0.1), transparent);
     animation: shimmer 1.5s infinite;
   }
 }
 
 .crypto-card-skeleton {
-  background-color: variables.$dark-bg-secondary;
-  padding: variables.$spacing-5;
-  border-radius: variables.$border-radius;
-  border: 1px solid variables.$border-color;
+  background-color: vars.$dark-bg-secondary;
+  padding: vars.$spacing-5;
+  border-radius: vars.$border-radius;
+  border: 1px solid var(--border-color);
   height: 100%;
 
   &__header {
     display: flex;
     align-items: center;
-    gap: variables.$spacing-4;
-    margin-bottom: variables.$spacing-4;
+    gap: vars.$spacing-4;
+    margin-bottom: vars.$spacing-4;
   }
   &__image {
     width: 40px;
@@ -47,7 +47,7 @@
   }
   &__line {
     height: 1rem;
-    margin-bottom: variables.$spacing-2;
+    margin-bottom: vars.$spacing-2;
     border-radius: 0.25rem;
 
     &--sm { width: 40%; }

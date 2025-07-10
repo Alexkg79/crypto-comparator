@@ -9,7 +9,7 @@
     font-size: vars.$font-size-3xl;
     font-weight: 700;
     margin-bottom: vars.$spacing-8;
-    color: vars.$text-light;
+    color: var(--text-primary);
     text-align: center;
   }
 
@@ -47,14 +47,14 @@
 
     &__message {
       font-size: vars.$font-size-lg;
-      color: vars.$text-medium;
+      color: var(--text-secondary);
       max-width: 400px;
       margin: 0;
     }
 
     &__button {
-      background-color: vars.$primary-blue;
-      color: vars.$text-light;
+      background-color: var(--primary-blue);
+      color: var(--text-primary);
       border: none;
       padding: vars.$spacing-3 vars.$spacing-6;
       border-radius: vars.$border-radius;
@@ -66,9 +66,9 @@
       display: inline-block;
 
       &:hover {
-        background-color: vars.$primary-blue-hover;
+        background-color: var(--primary-blue)-hover;
         transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(vars.$primary-blue, 0.3);
+        box-shadow: 0 4px 10px rgba(var(--primary-blue), 0.3);
       }
 
       &:active {

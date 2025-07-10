@@ -14,12 +14,12 @@
 }
 
 .modal-content {
-  background-color: vars.$dark-bg-secondary;
+  background-color: var(--bg-secondary);
   padding: vars.$spacing-8;
   border-radius: vars.$border-radius;
   width: 90%;
   max-width: 500px;
-  border: 1px solid vars.$border-color;
+  border: 1px solid var(--border-color);
 }
 
 .modal-title {
@@ -28,7 +28,7 @@
 }
 
 .modal-subtitle {
-  color: vars.$text-medium;
+  color: var(--text-secondary);
   margin-top: vars.$spacing-1;
   margin-bottom: vars.$spacing-6;
 }
@@ -44,9 +44,9 @@
     width: 100%;
     padding: vars.$spacing-3;
     border-radius: 0.5rem;
-    border: 1px solid vars.$border-color;
-    background-color: vars.$dark-bg-primary;
-    color: vars.$text-light;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     font-size: vars.$font-size-base;
   }
 }
@@ -67,13 +67,17 @@
   transition: vars.$transition;
 
   &.btn-primary {
-    background-color: vars.$primary-blue;
-    color: vars.$text-light;
-    &:hover { background-color: vars.$primary-blue-hover; }
+    background-color: var(--primary-blue);
+    color: var(--text-primary);
+    &:hover { 
+      background-color: var(--bg-secondary-hover);
+    }
   }
   &.btn-secondary {
-    background-color: vars.$border-color;
-    color: vars.$text-light;
-    &:hover { background-color: lighten(vars.$border-color, 10%); }
+    background-color: var(--border-color);
+    color: var(--text-primary);
+    &:hover { 
+       background-color: var(--bg-secondary-hover);
+    }
   }
 }

@@ -2,8 +2,8 @@
 
 .app-header {
   padding: vars.$spacing-4 vars.$spacing-6;
-  background-color: vars.$dark-bg-secondary;
-  border-bottom: 1px solid vars.$border-color;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color); 
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -24,7 +24,7 @@
 }
 
 .nav-link {
-  color: vars.$text-medium;
+  color: var(--text-secondary);
   font-weight: 600;
   font-size: vars.$font-size-lg;
   padding-bottom: vars.$spacing-1;
@@ -32,11 +32,11 @@
   transition: vars.$transition;
 
   &:hover {
-    color: vars.$text-light;
+    color: var(--text-primary);
   }
 
   &.active {
-    color: vars.$primary-blue;
-    border-bottom-color: vars.$primary-blue;
+    color: var(--primary-blue);
+    border-bottom-color: var(--primary-blue);
   }
 }
