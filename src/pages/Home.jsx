@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchTopCryptos } from '../services/api';
+import { motion } from 'framer-motion';
 import CryptoCard from '../components/CryptoCard';
 import { useFavorites } from '../hooks/useFavorites';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
@@ -101,6 +102,23 @@ export default function Home() {
     </div>
   );
 
+  //Framer motion
+  // Pour le conteneur des cartes
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  };
+  // Pour chaque carte individuelle
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1 },
+  };
+
   if (error) return <p className="error-message">Erreur : {error}</p>;
 
   return (
@@ -117,22 +135,28 @@ export default function Home() {
         />
       </div>
 
-      <div className="home-container__grid">
+      <motion.div
+        className="home-container__grid"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+      >
         {(loading && page === 1) ? (
           Array.from({ length: 12 }).map((_, index) => (
             <CryptoCardSkeleton key={index} />
           ))
         ) : (
           filteredCryptos.map(crypto => (
-            <CryptoCard
-              key={crypto.id}
-              crypto={crypto}
-              isFavorite={favorites.includes(crypto.id)}
-              toggleFavorite={toggleFavorite}
-            />
+            <motion.div key={crypto.id} variants={itemVariants}>
+              <CryptoCard
+                crypto={crypto}
+                isFavorite={favorites.includes(crypto.id)}
+                toggleFavorite={toggleFavorite}
+              />
+            </motion.div>
           ))
         )}
-      </div>
+      </motion.div>
 
       {!search && isLoadingMore && <LoadingMore />}
       
