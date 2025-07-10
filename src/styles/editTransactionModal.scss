@@ -1,0 +1,41 @@
+@use 'variables' as vars;
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal {
+  background: vars.$dark-bg-primary;
+  padding: vars.$spacing-8;
+  border-radius: vars.$spacing-3;
+  width: 100%;
+  max-width: 400px;
+  color: vars.$text-light;
+}
+
+.modal label {
+  display: block;
+  margin-bottom: vars.$spacing-4;
+}
+
+.modal input {
+  width: 100%;
+  padding: vars.$spacing-2;
+  margin-top: vars.$spacing-1;
+  border-radius: vars.$border-radius;
+  border: none;
+  background: vars.$dark-bg-secondary;
+  color: vars.$text-light;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: vars.$spacing-6;
+}

@@ -1,0 +1,79 @@
+@use 'variables' as vars;
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background-color: vars.$dark-bg-secondary;
+  padding: vars.$spacing-8;
+  border-radius: vars.$border-radius;
+  width: 90%;
+  max-width: 500px;
+  border: 1px solid vars.$border-color;
+}
+
+.modal-title {
+  margin-top: 0;
+  font-size: vars.$font-size-2xl;
+}
+
+.modal-subtitle {
+  color: vars.$text-medium;
+  margin-top: vars.$spacing-1;
+  margin-bottom: vars.$spacing-6;
+}
+
+.form-group {
+  margin-bottom: vars.$spacing-4;
+  label {
+    display: block;
+    margin-bottom: vars.$spacing-2;
+    font-weight: 500;
+  }
+  input {
+    width: 100%;
+    padding: vars.$spacing-3;
+    border-radius: 0.5rem;
+    border: 1px solid vars.$border-color;
+    background-color: vars.$dark-bg-primary;
+    color: vars.$text-light;
+    font-size: vars.$font-size-base;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: vars.$spacing-3;
+  margin-top: vars.$spacing-8;
+}
+
+.btn {
+  padding: vars.$spacing-2 vars.$spacing-5;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: vars.$transition;
+
+  &.btn-primary {
+    background-color: vars.$primary-blue;
+    color: vars.$text-light;
+    &:hover { background-color: vars.$primary-blue-hover; }
+  }
+  &.btn-secondary {
+    background-color: vars.$border-color;
+    color: vars.$text-light;
+    &:hover { background-color: lighten(vars.$border-color, 10%); }
+  }
+}
