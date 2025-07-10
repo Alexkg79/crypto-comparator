@@ -49,7 +49,7 @@ export default function CryptoDetails() {
   const { loading, error, crypto, chartData } = state;
   const [days, setDays] = useState(7);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [, addTransaction] = usePortfolio();
+  const { addTransaction } = usePortfolio();
 
   useEffect(() => {
     const fetchData = async () => {

@@ -5,49 +5,41 @@ const PORTFOLIO_KEY = 'cryptoPortfolio';
 
 export function usePortfolio() {
   const [transactions, setTransactions] = useState([]);
-
-  // Charger les transactions depuis le localStorage au démarrage
+// Charger les transactions depuis le localStorage au démarrage
   useEffect(() => {
-    const storedTransactions = localStorage.getItem(PORTFOLIO_KEY);
-    if (storedTransactions) {
-      setTransactions(JSON.parse(storedTransactions));
+    const stored = localStorage.getItem(PORTFOLIO_KEY);
+    if (stored) {
+      setTransactions(JSON.parse(stored));
     }
   }, []);
 
+  const saveTransactions = (newTransactions) => {
+    setTransactions(newTransactions);
+    localStorage.setItem(PORTFOLIO_KEY, JSON.stringify(newTransactions));
+  };
   // Fonction pour ajouter une nouvelle transaction
   const addTransaction = (newTransaction) => {
-    // On ajoute un ID unique et la date à la transaction
-    const transactionWithId = {
-      ...newTransaction,
-      id: Date.now(),
-      date: new Date().toISOString(),
-    };
-
-    const updatedTransactions = [...transactions, transactionWithId];
-    setTransactions(updatedTransactions);
-    localStorage.setItem(PORTFOLIO_KEY, JSON.stringify(updatedTransactions));
-
-    toast.success('Transaction ajoutée avec succès !');
+  // On ajoute un ID unique et la date à la transaction
+    const transactionWithMeta = { ...newTransaction, id: Date.now(), date: new Date().toISOString() };
+    saveTransactions([...transactions, transactionWithMeta]);
+    toast.success('Transaction ajoutée !');
   };
-
-  // Fonction pour supprimer une transaction
-  const deleteTransaction = (id) => {
-    const updated = transactions.filter(tx => tx.id !== id);
-    setTransactions(updated);
-    localStorage.setItem(PORTFOLIO_KEY, JSON.stringify(updated));
-    toast.success('Transaction supprimée');
-    location.reload();
-  };
-
   // Fonction pour éditer une transaction
-  const editTransaction = (updatedTx) => {
-    const updated = transactions.map(tx =>
-      tx.id === updatedTx.id ? { ...tx, ...updatedTx } : tx
+  const editTransaction = (transactionId, dataToUpdate) => {
+    const updated = transactions.map(t =>
+      t.id === transactionId ? { ...t, ...dataToUpdate } : t
     );
-    setTransactions(updated);
-    localStorage.setItem(PORTFOLIO_KEY, JSON.stringify(updated));
-    toast.success('Transaction mise à jour');
+    saveTransactions(updated);
+    toast.success('Transaction modifiée !');
+  };
+  // Fonction pour supprimer une transaction
+  const deleteTransaction = (transactionId) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette transaction ?")) {
+      const filtered = transactions.filter(t => t.id !== transactionId);
+      saveTransactions(filtered);
+      toast.error('Transaction supprimée.');
+    }
   };
 
-  return [transactions, addTransaction, deleteTransaction, editTransaction];
+  return { transactions, addTransaction, editTransaction, deleteTransaction };
 }
