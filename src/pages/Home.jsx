@@ -3,6 +3,7 @@ import { fetchTopCryptos } from '../services/api';
 import CryptoCard from '../components/CryptoCard';
 import { useFavorites } from '../hooks/useFavorites';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
+import CryptoCardSkeleton from '../components/CryptoCardSkeleton';
 import '../styles/main.scss';
 
 export default function Home() {
@@ -92,14 +93,6 @@ export default function Home() {
     crypto.symbol.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Composant de chargement
-  const LoadingSpinner = () => (
-    <div className="loading-spinner">
-      <div className="spinner"></div>
-      <p>Chargement des cryptomonnaies...</p>
-    </div>
-  );
-
   // Composant pour le chargement de plus d'éléments
   const LoadingMore = () => (
     <div className="loading-more">
@@ -108,7 +101,6 @@ export default function Home() {
     </div>
   );
 
-  if (loading && page === 1) return <LoadingSpinner />;
   if (error) return <p className="error-message">Erreur : {error}</p>;
 
   return (
@@ -126,14 +118,20 @@ export default function Home() {
       </div>
 
       <div className="home-container__grid">
-        {filteredCryptos.map(crypto => (
-          <CryptoCard
-            key={crypto.id}
-            crypto={crypto}
-            isFavorite={favorites.includes(crypto.id)}
-            toggleFavorite={toggleFavorite}
-          />
-        ))}
+        {(loading && page === 1) ? (
+          Array.from({ length: 12 }).map((_, index) => (
+            <CryptoCardSkeleton key={index} />
+          ))
+        ) : (
+          filteredCryptos.map(crypto => (
+            <CryptoCard
+              key={crypto.id}
+              crypto={crypto}
+              isFavorite={favorites.includes(crypto.id)}
+              toggleFavorite={toggleFavorite}
+            />
+          ))
+        )}
       </div>
 
       {!search && isLoadingMore && <LoadingMore />}
