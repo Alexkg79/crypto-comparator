@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Chart as ChartJS,
@@ -10,6 +10,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+
 import Converter from '../components/Converter';
 import { usePortfolio } from '../hooks/usePortfolio';
 import AddTransactionModal from '../components/AddTransactionModal';
@@ -23,9 +24,8 @@ const initialState = {
   crypto: null,
   chartData: null,
 };
-
 // --- Le reducer pour gérer les états complexes de manière plus sûre ---
-function cryptoDetailsReducer(state, action) {
+function reducer(state, action) {
   switch (action.type) {
     case 'FETCH_START':
       return { ...state, loading: true, error: null };
@@ -39,18 +39,67 @@ function cryptoDetailsReducer(state, action) {
     case 'FETCH_ERROR':
       return { ...state, loading: false, error: action.payload };
     default:
-      throw new Error("Action non supportée dans le reducer.");
+      return state;
   }
 }
 
+// --- Fonction utilitaire pour récupérer les couleurs CSS ---
+const getCSSVariable = (variable) => {
+  return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+};
+
 export default function CryptoDetails() {
   const { id } = useParams();
-  const [state, dispatch] = useReducer(cryptoDetailsReducer, initialState);
-  const { loading, error, crypto, chartData } = state;
   const [days, setDays] = useState(7);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [themeKey, setThemeKey] = useState(0);
+  const [state, dispatch] = useReducer(reducer, initialState);
   const { addTransaction } = usePortfolio();
+  const { crypto, chartData, loading, error } = state;
 
+  // --- Détection du viewport mobile ---
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // --- Fonction pour créer les données du graphique avec les bonnes couleurs ---
+  const createChartData = (marketData) => {
+    const labels = marketData.prices.map(([timestamp]) => {
+      const date = new Date(timestamp);
+      return days === 1 
+        ? date.toLocaleTimeString('fr-FR', { hour: '2-digit' })
+        : date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+    });
+
+    const prices = marketData.prices.map(([, price]) => price);
+    const chartColor = '#00D2FF';
+    const bgFill = 'rgba(0, 210, 255, 0.1)';
+
+    return {
+      labels,
+      datasets: [{
+        label: 'Prix USD',
+        data: prices,
+        borderColor: chartColor,
+        backgroundColor: bgFill,
+        fill: true,
+        tension: 0.3,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        pointHoverBackgroundColor: chartColor,
+        pointHoverBorderColor: '#ffffff',
+        pointHoverBorderWidth: 2,
+      }]
+    };
+  };
+
+  // --- Chargement des données depuis l'API ---
   useEffect(() => {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_START' });
@@ -60,34 +109,14 @@ export default function CryptoDetails() {
           fetch(`https://api.coingecko.com/api/v3/coins/${id}`).then(res => res.json()),
           fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${days}`).then(res => res.json()),
         ]);
-        
         // Gère le cas où l'API renvoie une erreur
         if (coinRes.error || marketRes.error) {
-            throw new Error(coinRes.error || marketRes.error);
+          throw new Error(coinRes.error || marketRes.error);
         }
 
-        const labels = marketRes.prices.map(([timestamp]) =>
-          new Date(timestamp).toLocaleDateString('fr-FR', days === 1
-            ? { hour: '2-digit', minute: '2-digit' }
-            : { month: 'short', day: 'numeric' })
-        );
-        const prices = marketRes.prices.map(([, price]) => price);
-        
-        const formattedChartData = {
-          labels,
-          datasets: [{
-            label: 'Prix USD',
-            data: prices,
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            fill: true,
-            tension: 0.3,
-            pointRadius: 0,
-          }]
-        };
-
+        const formattedChart = createChartData(marketRes);
         // Envoie les données au state en cas de succès
-        dispatch({ type: 'FETCH_SUCCESS', payload: { crypto: coinRes, chartData: formattedChartData } });
+        dispatch({ type: 'FETCH_SUCCESS', payload: { crypto: coinRes, chartData: formattedChart } });
       } catch (err) {
         // Envoie l'erreur au state
         dispatch({ type: 'FETCH_ERROR', payload: err.message });
@@ -95,15 +124,128 @@ export default function CryptoDetails() {
     };
 
     fetchData();
-  }, [id, days]); // Le useEffect se relance si l'id ou le nombre de jours change
+  }, [id, days]);// Le useEffect se relance si l'id ou le nombre de jours change
+  
+  // --- Détecte le changement de thème pour mettre à jour les couleurs du texte ---
+  useEffect(() => {
+    const handleThemeChange = () => {
+      setThemeKey(prev => prev + 1);
+    };
 
-  // --- Affichage des états de chargement et d'erreur ---
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          handleThemeChange();
+        }
+      });
+    });
+
+    observer.observe(document.body, { attributes: true });
+    observer.observe(document.documentElement, { attributes: true });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // --- Options dynamiques pour Chart.js ---
+  const chartOptions = useMemo(() => {
+    const textColor = getCSSVariable('--text-primary');
+    const borderColor = getCSSVariable('--border-color');
+    const bgTooltip = getCSSVariable('--bg-secondary');
+
+    // Configuration pour l'axe X basée sur la période
+    const getMaxTicksLimit = () => {
+      if (days === 1) return 8;
+      if (days === 7) return 4;
+      return 6;
+    };
+
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        intersect: false,
+        mode: 'index',
+      },
+      layout: {
+        padding: isMobile ? {
+          top: 20,
+          right: 15,
+          bottom: 25,
+          left: 15
+        } : 10
+      },
+      scales: {
+        y: {
+          position: 'right',
+          ticks: {
+            color: textColor,
+            font: { size: isMobile ? 10 : 11 },
+            padding: 20,
+            callback: (value) => {
+              const formatter = new Intl.NumberFormat('en-US', {
+                notation: 'compact',
+                maximumSignificantDigits: 3
+              });
+              return '$' + formatter.format(value);
+            }
+          },
+          grid: {
+            color: borderColor,
+            drawTicks: false,
+            lineWidth: (ctx) => ctx.tick.value === 0 ? 1 : 0.5
+          }
+        },
+        x: {
+          ticks: {
+            color: textColor,
+            font: { size: isMobile ? 10 : 11 },
+            maxRotation: 0,
+            minRotation: 0,
+            maxTicksLimit: getMaxTicksLimit()
+          },
+          grid: { 
+            display: false,
+            drawBorder: false,
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: !isMobile,
+          labels: { 
+            color: textColor,
+            usePointStyle: true,
+            padding: 20,
+            font: { size: isMobile ? 12 : 13 }
+          },
+        },
+        tooltip: {
+          backgroundColor: bgTooltip,
+          titleColor: textColor,
+          bodyColor: textColor,
+          borderColor: borderColor,
+          borderWidth: 1,
+          cornerRadius: 8,
+          padding: 12,
+          bodyFont: { size: isMobile ? 13 : 14 },
+          titleFont: { size: isMobile ? 14 : 15 },
+          callbacks: {
+            label: function(context) {
+              return `Prix: $${context.parsed.y.toLocaleString()}`;
+            }
+          }
+        },
+      },
+    };
+  }, [isMobile, themeKey, days]);
+
+  // --- États ---
   if (loading) return <p className="loading-message">Chargement des données...</p>;
   if (error) return <p className="error-message">Erreur : {error}</p>;
   // Si crypto n'existe pas après le chargement, c'est qu'il y a un problème
-  if (!crypto) return <p className="error-message">Impossible de trouver les données pour cette cryptomonnaie.</p>;
+  if (!crypto) return <p className="error-message">Crypto introuvable.</p>;
 
-
+  // --- Affichage principal ---
   return (
     <div className="details-container">
       <header className="details-header">
@@ -114,9 +256,7 @@ export default function CryptoDetails() {
           <p className="market-cap">🏦 Capitalisation : ${crypto.market_data.market_cap.usd.toLocaleString()}</p>
         </div>
         <div className="details-header__actions">
-            <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-                Ajouter une transaction
-            </button>
+          <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>Ajouter une transaction</button>
         </div>
       </header>
 
@@ -134,14 +274,11 @@ export default function CryptoDetails() {
 
       <div className="chart-container">
         {chartData && (
-          <Line data={chartData} options={{
-            responsive: true,
-            scales: {
-              y: { ticks: { color: '#f3f4f6' }, grid: { color: '#4b5563' } },
-              x: { ticks: { color: '#f3f4f6' }, grid: { display: false } }
-            },
-            plugins: { legend: { labels: { color: '#f3f4f6' } } }
-          }} />
+          <Line
+            key={`${themeKey}-${isMobile ? 'mobile' : 'desktop'}`}
+            data={chartData}
+            options={chartOptions}
+          />
         )}
       </div>
 
@@ -153,10 +290,11 @@ export default function CryptoDetails() {
 
       <section className="about-section">
         <h3 className="about-section__title">📘 À propos</h3>
-        <p className="about-section__description">{crypto.description.en?.split('. ')[0] || "Aucune description disponible."}.</p>
+        <p className="about-section__description">
+          {crypto.description.en?.split('. ')[0] || "Aucune description disponible."}.
+        </p>
       </section>
 
-      {/* La modale ne s'affiche que si isModalOpen est true */}
       {isModalOpen && (
         <AddTransactionModal
           crypto={crypto}

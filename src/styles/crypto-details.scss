@@ -14,6 +14,7 @@
   margin-bottom: vars.$spacing-8;
   display: flex;
   align-items: center;
+  justify-content: space-around;
   gap: vars.$spacing-6;
 
   &__image {
@@ -36,10 +37,13 @@
       color: var(--text-primary);
       font-size: vars.$font-size-lg;
       &.market-cap {
-        font-size: 0.875rem;
+        font-size: vars.$font-size-sm;
         color: var(--text-secondary);
       }
     }
+  }
+  button{
+    width: 80%;
   }
 }
 
@@ -71,13 +75,6 @@
   }
 }
 
-.chart-container {
-  background-color: var(--bg-primary);
-  padding: vars.$spacing-5;
-  border-radius: vars.$border-radius;
-  border: 1px solid var(--border-color);
-  margin-bottom: vars.$spacing-6;
-}
 
 .about-section {
   background-color: var(--bg-secondary);
@@ -98,4 +95,78 @@
     color: var(--text-secondary);
     line-height: 1.5;
   }
+}
+
+.chart-container {
+  position: relative;
+  margin: 2rem 0;
+  height: 400px; 
+  
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  // Version mobile
+  @media (max-width: 767px) {
+    height: 500px !important;
+    margin: 1.5rem 0;
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .details-header {
+    flex-direction: column;
+    text-align: center;
+    
+    &__image {
+      margin-bottom: 1rem;
+    }
+    
+    &__info {
+      margin-bottom: 1rem;
+      
+      h2 {
+        font-size: 1.5rem;
+      }
+      
+      p {
+        font-size: 0.9rem;
+      }
+    }
+    
+    &__actions {
+      width: 100%;
+      
+      .btn {
+        width: 100%;
+        padding: 0.75rem;
+      }
+    }
+  }
+  
+  .time-selector {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    
+    &__button {
+      flex: 1;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+  }
+  
+  .about-section {
+    &__title {
+      font-size: 1.2rem;
+    }
+    
+    &__description {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+  }
+
 }

@@ -13,8 +13,8 @@ export function useTheme() {
   // Ce useEffect s'exécute à chaque changement de thème
   useEffect(() => {
     // On met à jour la classe sur le body
-    document.body.className = ''; // On nettoie d'abord
-    document.body.classList.add(`${theme}-theme`);
+  document.documentElement.className = '';// On nettoie d'abord
+  document.documentElement.classList.add(`${theme}-theme`);
 
     // On sauvegarde le choix dans le localStorage
     localStorage.setItem('theme', theme);
