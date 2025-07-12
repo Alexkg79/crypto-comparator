@@ -123,15 +123,18 @@ export default function Home() {
 
   return (
     <div className="home-container">
-      <h1 className="home-container__title">📊 Top Cryptomonnaies</h1>
-
-      <div className="home-container__search">
+      <header className="home-container__header">
+        <h1>Top Cryptomonnaies</h1>
+        <p>Suivez les tendances en temps réel des cryptos les plus populaires</p>
+      </header>
+      <div className="search-wrapper">
+        <span className="search-icon">🔍</span>
         <input
           type="text"
-          placeholder="🔍 Rechercher (BTC, ETH...)"
+          placeholder="Rechercher une crypto (BTC, ETH...)"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="home-container__search-bar"
+          className="search-input"
         />
       </div>
 

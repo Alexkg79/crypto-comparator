@@ -5,6 +5,23 @@
   margin: 0 auto;
   padding: vars.$spacing-10 vars.$spacing-6;
 
+  &__header {
+  text-align: center;
+  margin-bottom: vars.$spacing-10;
+
+  h1 {
+    font-size: vars.$font-size-4xl;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: vars.$spacing-2;
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: vars.$font-size-base;
+  }
+}
+
   &__title {
     font-size: vars.$font-size-3xl;
     font-weight: 700;
@@ -15,15 +32,31 @@
     }
   }
 
-  &__search-bar {
-    width: 95%;
+.search-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto vars.$spacing-8;
+
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: var(--text-secondary);
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 100%;
     padding: vars.$spacing-4 vars.$spacing-5;
+    padding-left: 2.75rem;
     border-radius: vars.$border-radius;
-    background-color: var(--bg-primary);
+    background-color: var(--bg-secondary);
     color: var(--text-primary);
     border: 1px solid var(--border-color);
     font-size: vars.$font-size-base;
-    margin-bottom: vars.$spacing-8;
     transition: vars.$transition;
 
     &::placeholder {
@@ -36,6 +69,7 @@
       box-shadow: 0 0 0 2px var(--primary-blue);
     }
   }
+}
 
   &__grid {
     display: grid;

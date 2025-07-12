@@ -4,7 +4,48 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: vars.$spacing-6;
+  margin-bottom: vars.$spacing-10;
+  gap: vars.$spacing-4;
+
+  .home-container__title {
+    margin: 0; 
+    margin-bottom: 0 !important;
+    font-size: vars.$font-size-3xl;
+  }
+  
+  button {
+    margin: 0;
+    position: relative;
+    cursor: pointer;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 16px;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.9);
+    backdrop-filter: blur(10px);
+    color: var(--primary-blue);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
+    
+    &:hover {
+      transform: scale(1.03);
+      background: rgba(59, 130, 246, 0.15);
+      border-color: var(--primary-blue);
+      backdrop-filter: blur(15px);
+    }
+    
+    &:active {
+      transform: scale(1.05);
+      background: rgba(59, 130, 246, 0.3);
+    }
+    
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+  }
 }
 
 .portfolio-summary {
@@ -27,12 +68,15 @@
       text-transform: uppercase;
       font-weight: 600;
     }
+    
     p {
       font-size: vars.$font-size-2xl;
       font-weight: 700;
+      
       &.positive { color: var(--success-color); }
       &.negative { color: var(--error-color); }
       &.total-value { color: var(--primary-blue); }
+      
       span {
         font-size: vars.$font-size-base;
         color: var(--text-secondary);
@@ -51,38 +95,46 @@
 .portfolio-table {
   width: 100%;
   border-collapse: collapse;
+  
   th, td {
     padding: vars.$spacing-4;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
     white-space: nowrap;
   }
+  
   thead th {
     color: var(--text-secondary);
     font-size: vars.$font-size-sm;
     text-transform: uppercase;
     font-weight: 600;
   }
+  
   tbody tr {
     transition: background-color 0.2s ease;
     &:hover { background-color: var(--bg-hover); }
   }
+  
   .positive { color: var(--success-color); }
   .negative { color: var(--error-color); }
+  
   .crypto-cell {
     display: flex;
     align-items: center;
     gap: vars.$spacing-3;
     font-weight: 600;
+    
     img {
       width: 28px;
       height: 28px;
     }
   }
+  
   .action-buttons {
     display: flex;
     gap: vars.$spacing-4;
   }
+  
   .icon-btn {
     background: none;
     border: none;
@@ -90,19 +142,53 @@
     cursor: pointer;
     color: var(--text-secondary);
     transition: all 0.2s ease;
+    
     &:hover {
       color: var(--primary-blue);
       transform: scale(1.15);
     }
+    
     &.btn-delete:hover {
       color: var(--error-color);
     }
   }
 }
 
+// === RESPONSIVE MEDIA QUERIES ===
+
+// Tablette
+@media (max-width: 1024px) and (min-width: 769px) {
+  .portfolio-header {
+    gap: vars.$spacing-3;
+    
+    .btn {
+      white-space: nowrap;
+      min-width: fit-content;
+    }
+  }
+  
+  .portfolio-table {
+    th, td {
+      padding: vars.$spacing-3;
+      font-size: vars.$font-size-sm;
+    }
+    
+    .crypto-cell img {
+      width: 24px;
+      height: 24px;
+    }
+    
+    .action-buttons {
+      gap: vars.$spacing-2;
+    }
+  }
+}
+
+// Mobile
 @media (max-width: 781px) {
   .portfolio-table {
     thead { display: none; }
+    
     tr {
       display: block;
       margin-bottom: vars.$spacing-6;
@@ -110,20 +196,91 @@
       border-radius: vars.$border-radius;
       padding: vars.$spacing-2;
       box-shadow: var(--box-shadow);
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
+    
     td {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: vars.$spacing-3;
       border-bottom: 1px dotted var(--border-color);
+      
       &::before {
         content: attr(data-label);
         font-weight: 600;
         color: var(--text-secondary);
+        min-width: 100px;
       }
-      &:last-child { border-bottom: none; }
+      
+      &:last-child { 
+        border-bottom: none; 
+      }
     }
-    .action-buttons { justify-content: flex-end; }
+    
+    .action-buttons { 
+      justify-content: flex-end;
+      gap: vars.$spacing-3;
+    }
+    
+    .crypto-cell {
+      gap: vars.$spacing-2;
+      
+      img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+}
+
+// Mobile - Header et Summary
+@media (max-width: 768px) {
+  .portfolio-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: vars.$spacing-4;
+    
+    .home-container__title {
+      text-align: center;
+      margin-bottom: 0;
+    }
+    
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  .portfolio-summary {
+    grid-template-columns: 1fr;
+    gap: vars.$spacing-4;
+    margin-bottom: vars.$spacing-6;
+    
+    .summary-box {
+      padding: vars.$spacing-4;
+      
+      h2 {
+        font-size: vars.$font-size-sm;
+      }
+      
+      p {
+        font-size: vars.$font-size-xl;
+        
+        span {
+          font-size: vars.$font-size-sm;
+          display: block;
+          margin-left: 0;
+          margin-top: vars.$spacing-1;
+        }
+      }
+    }
+  }
+  
+  .table-wrapper {
+    -webkit-overflow-scrolling: touch;
   }
 }
