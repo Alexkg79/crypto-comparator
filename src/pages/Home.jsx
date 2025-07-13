@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { fetchTopCryptos } from '../services/api';
 import { motion } from 'framer-motion';
+import { fetchTopCryptos, searchCryptos } from '../services/api';
 import CryptoCard from '../components/CryptoCard';
+import SearchResultCard from '../components/SearchResultCard';
 import { useFavorites } from '../hooks/useFavorites';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 import CryptoCardSkeleton from '../components/CryptoCardSkeleton';
@@ -9,117 +10,89 @@ import '../styles/main.scss';
 
 export default function Home() {
   const [cryptos, setCryptos] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState(null);
   const [favorites, toggleFavorite] = useFavorites();
   const [page, setPage] = useState(1);
   const { isLoading: isLoadingMore, setIsLoading: setIsLoadingMore, hasMore, setHasMore } = useInfiniteScroll();
 
-  const CRYPTOS_PER_PAGE = 20;
-
-  // Fonction pour récupérer les cryptos avec pagination
-  const fetchCryptos = async (pageNum, isAppending = false) => {
-    try {
-      if (!isAppending) setLoading(true);
-      else setIsLoadingMore(true);
-
-      const response = await fetch(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${CRYPTOS_PER_PAGE}&page=${pageNum}&sparkline=false`
-      );
-      
-      if (!response.ok) {
-        throw new Error('Erreur lors du chargement des données');
-      }
-      
-      const data = await response.json();
-      
-      if (data.length === 0) {
-        setHasMore(false);
-        return;
-      }
-
-      if (isAppending) {
-        setCryptos(prev => [...prev, ...data]);
-      } else {
-        setCryptos(data);
-      }
-      
-      // S'il y a moins de cryptos que demandé, on a atteint la fin
-      if (data.length < CRYPTOS_PER_PAGE) {
-        setHasMore(false);
-      }
-      
-    } catch (err) {
-      setError(err.message);
-      if (isAppending) {
-        setHasMore(false);
-      }
-    } finally {
-      setLoading(false);
-      setIsLoadingMore(false);
-    }
-  };
-
-  // Chargement initial
+  // Chargement initial et pour le scroll infini
   useEffect(() => {
-    fetchCryptos(1);
-    
-    // Refresh toutes les 60s seulement pour la première page
+    // Ne se déclenche que si la recherche est vide
+    if (search.trim() !== '') return;
+
+    // Affiche le skeleton uniquement pour le tout premier chargement
+    if (page === 1) setLoading(true);
+    else setIsLoadingMore(true);
+
+    fetchTopCryptos(page)
+      .then(data => {
+        if (data.length === 0) setHasMore(false);
+        setCryptos(prev => page === 1 ? data : [...prev, ...data]);
+      })
+      .catch(err => setError(err.message))
+      .finally(() => {
+        setLoading(false);
+        setIsLoadingMore(false);
+      });
+  }, [page, search]);
+
+  // Refresh toutes les 60s
+  useEffect(() => {
     const interval = setInterval(() => {
-      if (page === 1) {
-        fetchCryptos(1);
+      if (page === 1 && !search) {
+        fetchTopCryptos(1).then(data => setCryptos(data));
       }
     }, 60000);
-    
     return () => clearInterval(interval);
-  }, []);
+  }, [page, search]);
+
+  // Recherche via l'API
+  useEffect(() => {
+    if (search.trim().length < 2) {
+      setSearchResults([]);
+      return;
+    }
+    
+    setIsSearching(true);
+    const debounceTimeout = setTimeout(() => {
+      searchCryptos(search)
+        .then(data => setSearchResults(data))
+        .catch(err => console.error("Search error:", err))
+        .finally(() => setIsSearching(false));
+    }, 300);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [search]);
 
   // Écouter l'événement de scroll infini
   useEffect(() => {
     const handleLoadMore = () => {
-      if (hasMore && !isLoadingMore && !loading && !search) { // Pas de scroll infini pendant la recherche
+      if (hasMore && !isLoadingMore && !loading && !search) {
         const nextPage = page + 1;
         setPage(nextPage);
-        fetchCryptos(nextPage, true);
       }
     };
-
     window.addEventListener('loadMore', handleLoadMore);
     return () => window.removeEventListener('loadMore', handleLoadMore);
-  }, [page, hasMore, isLoadingMore, loading, search]);
+  }, [hasMore, isLoadingMore, loading, search]);
 
-  const filteredCryptos = cryptos.filter(crypto =>
-    crypto.name.toLowerCase().includes(search.toLowerCase()) ||
-    crypto.symbol.toLowerCase().includes(search.toLowerCase())
-  );
+  const isSearchActive = search.trim().length > 0;
+  const dataToDisplay = isSearchActive ? searchResults : cryptos;
 
-  // Composant pour le chargement de plus d'éléments
   const LoadingMore = () => (
     <div className="loading-more">
       <div className="spinner-small"></div>
-      <p>Chargement de plus de cryptos...</p>
     </div>
   );
 
-  //Framer motion
-  // Pour le conteneur des cartes
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  };
-  // Pour chaque carte individuelle
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    show: { y: 0, opacity: 1 },
-  };
+  const containerVariants = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.05 } } };
+  const itemVariants = { hidden: { y: 20, opacity: 0 }, show: { y: 0, opacity: 1 } };
 
-  if (error) return <p className="error-message">Erreur : {error}</p>;
+  if (error && page === 1) return <p className="error-message">Erreur : {error}</p>;
 
   return (
     <div className="home-container">
@@ -138,18 +111,43 @@ export default function Home() {
         />
       </div>
 
-      <motion.div
-        className="home-container__grid"
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-      >
-        {(loading && page === 1) ? (
-          Array.from({ length: 12 }).map((_, index) => (
-            <CryptoCardSkeleton key={index} />
-          ))
-        ) : (
-          filteredCryptos.map(crypto => (
+      {(loading && !isSearchActive) ? (
+        <motion.div
+          className="home-container__grid"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
+          {Array.from({ length: 20 }).map((_, index) => <CryptoCardSkeleton key={index} />)}
+        </motion.div>
+      ) : isSearchActive ? (
+        // Conteneur spécial pour les résultats de recherche
+        <div className="search-results-container">
+          <div className="search-results-scrollable">
+            {dataToDisplay.map((crypto, index) => (
+              <div 
+                key={crypto.id} 
+                className={`search-result-wrapper pinned-result ${favorites.includes(crypto.id) ? "favorite-highlight" : ""}`}
+              >
+                <SearchResultCard
+                  key={crypto.id}
+                  crypto={crypto}
+                  isFavorite={favorites.includes(crypto.id)}
+                  toggleFavorite={toggleFavorite}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        // Conteneur pour la grille normale
+        <motion.div
+          className="home-container__grid"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
+          {dataToDisplay.map(crypto => (
             <motion.div key={crypto.id} variants={itemVariants}>
               <CryptoCard
                 crypto={crypto}
@@ -157,19 +155,19 @@ export default function Home() {
                 toggleFavorite={toggleFavorite}
               />
             </motion.div>
-          ))
-        )}
-      </motion.div>
+          ))}
+        </motion.div>
+      )}
 
-      {!search && isLoadingMore && <LoadingMore />}
-      
-      {!search && !hasMore && cryptos.length > 0 && (
+      {/* Le reste de votre code reste inchangé */}
+      {isSearching && <LoadingMore />}
+      {!isSearchActive && isLoadingMore && <LoadingMore />}
+      {!isSearchActive && !hasMore && cryptos.length > 0 && (
         <div className="end-message">
           <p>🎉 Vous avez vu toutes les cryptomonnaies disponibles !</p>
         </div>
       )}
-
-      {search && filteredCryptos.length === 0 && (
+      {isSearchActive && !isSearching && dataToDisplay.length === 0 && (
         <div className="no-results">
           <p>Aucune cryptomonnaie trouvée pour "{search}"</p>
         </div>

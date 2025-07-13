@@ -13,6 +13,7 @@ import { Line } from 'react-chartjs-2';
 
 import Converter from '../components/Converter';
 import { usePortfolio } from '../hooks/usePortfolio';
+import { useFavorites } from '../hooks/useFavorites';
 import AddTransactionModal from '../components/AddTransactionModal';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
@@ -24,6 +25,7 @@ const initialState = {
   crypto: null,
   chartData: null,
 };
+
 // --- Le reducer pour gérer les états complexes de manière plus sûre ---
 function reducer(state, action) {
   switch (action.type) {
@@ -56,6 +58,7 @@ export default function CryptoDetails() {
   const [themeKey, setThemeKey] = useState(0);
   const [state, dispatch] = useReducer(reducer, initialState);
   const { addTransaction } = usePortfolio();
+  const [favorites, toggleFavorite] = useFavorites(); // Hook pour les favoris
   const { crypto, chartData, loading, error } = state;
 
   // --- Détection du viewport mobile ---
@@ -251,7 +254,16 @@ export default function CryptoDetails() {
       <header className="details-header">
         <img src={crypto.image.large} alt={crypto.name} className="details-header__image" />
         <div className="details-header__info">
-          <h2>{crypto.name} <span>({crypto.symbol.toUpperCase()})</span></h2>
+          <h2>
+            {crypto.name} <span>({crypto.symbol.toUpperCase()})</span>
+            <button 
+              className={`favorite-btn ${favorites.includes(crypto.id) ? 'favorite-btn--active' : ''}`}
+              onClick={() => toggleFavorite(crypto.id)}
+              title={favorites.includes(crypto.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+            >
+              {favorites.includes(crypto.id) ? '★' : '☆'}
+            </button>
+          </h2>
           <p>💰 Prix : ${crypto.market_data.current_price.usd.toLocaleString()}</p>
           <p className="market-cap">🏦 Capitalisation : ${crypto.market_data.market_cap.usd.toLocaleString()}</p>
         </div>
