@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { usePortfolio } from '../hooks/usePortfolio';
 import AddTransactionModal from '../components/AddTransactionModal';
@@ -105,7 +106,7 @@ export default function Portfolio() {
                 <tr key={t.id}>
                   <td data-label="Actif">
                     <div className="crypto-cell">
-                      <img src={t.image} alt={t.symbol} />
+                      <img src={t.image || undefined} alt={t.symbol} />
                       <span>{t.symbol.toUpperCase()}</span>
                     </div>
                   </td>

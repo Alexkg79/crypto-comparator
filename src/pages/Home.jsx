@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { fetchTopCryptos, searchCryptos } from '../services/api';
 import CryptoCard from '../components/CryptoCard';
@@ -38,7 +38,7 @@ export default function Home() {
         setLoading(false);
         setIsLoadingMore(false);
       });
-  }, [page, search]);
+  }, [page, search, setIsLoadingMore, setHasMore]);
 
   // Refresh toutes les 60s
   useEffect(() => {
@@ -78,7 +78,7 @@ export default function Home() {
     };
     window.addEventListener('loadMore', handleLoadMore);
     return () => window.removeEventListener('loadMore', handleLoadMore);
-  }, [hasMore, isLoadingMore, loading, search]);
+  }, [hasMore, isLoadingMore, loading, search, page]);
 
   const isSearchActive = search.trim().length > 0;
   const dataToDisplay = isSearchActive ? searchResults : cryptos;

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
@@ -26,7 +27,7 @@ export default function CryptoCard({ crypto, isFavorite, toggleFavorite }) {
             </button>
 
             <header className="crypto-card__header">
-              <img src={crypto.image} alt={crypto.name} className="crypto-card__image" />
+              <img src={crypto.image || undefined} alt={crypto.name} className="crypto-card__image" />
               <div className="crypto-card__info">
                 <h2 className="crypto-card__info-name">{crypto.name}</h2>
                 <p className="crypto-card__info-symbol">{crypto.symbol}</p>

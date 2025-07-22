@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect, useReducer, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import {
@@ -15,6 +16,7 @@ import Converter from '../components/Converter';
 import { usePortfolio } from '../hooks/usePortfolio';
 import { useFavorites } from '../hooks/useFavorites';
 import AddTransactionModal from '../components/AddTransactionModal';
+import { fetchCryptoDetails, fetchCryptoChart } from '../services/api.js';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
@@ -108,18 +110,15 @@ export default function CryptoDetails() {
       dispatch({ type: 'FETCH_START' });
 
       try {
-        const [coinRes, marketRes] = await Promise.all([
-          fetch(`https://api.coingecko.com/api/v3/coins/${id}`).then(res => res.json()),
-          fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${days}`).then(res => res.json()),
+        // Utilisation des fonctions du service API
+        const [coinData, marketData] = await Promise.all([
+          fetchCryptoDetails(id),
+          fetchCryptoChart(id, days),
         ]);
-        // Gère le cas où l'API renvoie une erreur
-        if (coinRes.error || marketRes.error) {
-          throw new Error(coinRes.error || marketRes.error);
-        }
 
-        const formattedChart = createChartData(marketRes);
+        const formattedChart = createChartData(marketData);
         // Envoie les données au state en cas de succès
-        dispatch({ type: 'FETCH_SUCCESS', payload: { crypto: coinRes, chartData: formattedChart } });
+        dispatch({ type: 'FETCH_SUCCESS', payload: { crypto: coinData, chartData: formattedChart } });
       } catch (err) {
         // Envoie l'erreur au state
         dispatch({ type: 'FETCH_ERROR', payload: err.message });
@@ -252,10 +251,10 @@ export default function CryptoDetails() {
   return (
     <div className="details-container">
       <header className="details-header">
-        <img src={crypto.image.large} alt={crypto.name} className="details-header__image" />
+        <img src={crypto?.image?.large} alt={crypto?.name} className="details-header__image" />
         <div className="details-header__info">
           <h2>
-            {crypto.name} <span>({crypto.symbol.toUpperCase()})</span>
+            {crypto?.name} <span>({crypto?.symbol?.toUpperCase()})</span>
             <button 
               className={`favorite-btn ${favorites.includes(crypto.id) ? 'favorite-btn--active' : ''}`}
               onClick={() => toggleFavorite(crypto.id)}

@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function CryptoCardSkeleton() {
   return (
     <div className="crypto-card-skeleton">

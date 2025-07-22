@@ -1,6 +1,8 @@
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useFavorites } from '../hooks/useFavorites';
+import { fetchMarketsByIds } from '../services/api';
 import CryptoCard from '../components/CryptoCard';
 import '../styles/main.scss';
 
@@ -21,13 +23,8 @@ export default function Watchlist() {
     const fetchFavoriteData = async () => {
       try {
         setLoading(true);
-        // On transforme le tableau d'ID en une chaîne de caractères
-        const ids = favorites.join(',');
-        const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}`);
-        if (!response.ok) {
-          throw new Error("La requête vers l'API a échoué");
-        }
-        const data = await response.json();
+        // 👇 2. Utiliser la fonction du service au lieu de fetch() direct
+        const data = await fetchMarketsByIds(favorites);
         setFavoriteCryptos(data);
       } catch (err) {
         setError(err.message);
