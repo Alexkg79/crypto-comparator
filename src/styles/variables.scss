@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // Thème Sombre
 $dark-bg-primary: #111827;
 $dark-bg-secondary: #1f2937;
@@ -24,7 +26,7 @@ $error-color: #f87171;
 :root {
   --bg-primary: #{$dark-bg-primary};
   --bg-secondary: #{$dark-bg-secondary};
-  --bg-secondary-hover: #{lighten($dark-bg-secondary, 10%)};
+  --bg-secondary-hover: #{color.adjust($dark-bg-secondary, $lightness: 10%)};
   --bg-hover: #{$dark-bg-hover};
   --text-primary: #{$dark-text-primary};
   --text-secondary: #{$dark-text-secondary};
@@ -40,7 +42,7 @@ $error-color: #f87171;
 .light-theme {
   --bg-primary: #{$light-bg-primary};
   --bg-secondary: #{$light-bg-secondary};
-  --bg-secondary-hover: #{darken($light-bg-secondary, 5%)};
+  --bg-secondary-hover: #{color.adjust($light-bg-secondary, $lightness: -5%)};
   --bg-hover: #{$light-bg-hover};
   --text-primary: #{$light-text-primary};
   --text-secondary: #{$light-text-secondary};

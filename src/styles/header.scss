@@ -1,3 +1,4 @@
+@use "sass:map";
 @use 'variables' as vars;
 
 .app-header {
@@ -102,7 +103,7 @@
 }
 
 // Styles responsives
-@media (max-width: map-get(vars.$breakpoints, 'md')) {
+@media (max-width: map.get(vars.$breakpoints, 'md')) {
   .app-header {
     padding: vars.$spacing-3 vars.$spacing-4;
     
@@ -129,7 +130,7 @@
   }
 }
 
-@media (max-width: map-get(vars.$breakpoints, 'sm')) {
+@media (max-width: map.get(vars.$breakpoints, 'sm')) {
   .app-header {
     padding: vars.$spacing-2 vars.$spacing-3;
     
