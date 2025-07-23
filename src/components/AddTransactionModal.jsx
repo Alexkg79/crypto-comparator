@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
+import { fetchTopCryptos } from '../services/api';
 
 // On passe le crypto en prop optionnelle
 export default function AddTransactionModal({ crypto, onClose, onAddTransaction }) {
@@ -10,10 +11,17 @@ export default function AddTransactionModal({ crypto, onClose, onAddTransaction 
 
   // Si on n'a pas de crypto, on charge la liste pour le sélecteur
   useEffect(() => {
+    // Si on n'a pas de crypto, on charge la liste pour le sélecteur
     if (!crypto) {
-      fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1')
-        .then(res => res.json())
-        .then(setAllCryptos);
+      const loadCryptos = async () => {
+        try {
+          const data = await fetchTopCryptos(1, 100);
+          setAllCryptos(data);
+        } catch (error) {
+          console.error("Impossible de charger la liste des cryptos", error);
+        }
+      };
+      loadCryptos();
     }
   }, [crypto]);
 

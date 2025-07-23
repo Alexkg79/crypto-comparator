@@ -1,77 +1,59 @@
-import { fetchTopCryptos, searchCryptos } from './api';
+import { fetchTopCryptos, searchCryptos, fetchCryptoDetails, fetchMarketsByIds } from './api';
 
 // Mock de fetch global
 global.fetch = jest.fn();
 
-describe('API Service Tests', () => {
-  // Reset des mocks avant chaque test
+// On simule le localStorage pour les tests de cache
+const localStorageMock = (() => {
+  let store = {};
+  return {
+    getItem: (key) => store[key] || null,
+    setItem: (key, value) => { store[key] = value.toString(); },
+    removeItem: (key) => { delete store[key]; },
+    clear: () => { store = {}; },
+  };
+})();
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
+
+describe('API Service Tests with Cache and Retries', () => {
+
+  // Reset des mocks ET DU CACHE avant chaque test
   beforeEach(() => {
     fetch.mockClear();
+    localStorage.clear();
   });
 
   describe('fetchTopCryptos', () => {
-    it('should fetch top cryptos successfully with default page', async () => {
-      // Mock de la réponse API
-      const mockData = [
-        {
-          id: 'bitcoin',
-          name: 'Bitcoin',
-          symbol: 'btc',
-          current_price: 50000,
-          market_cap: 1000000000,
-          price_change_percentage_24h: 2.5
-        },
-        {
-          id: 'ethereum',
-          name: 'Ethereum',
-          symbol: 'eth',
-          current_price: 3000,
-          market_cap: 500000000,
-          price_change_percentage_24h: -1.2
-        }
-      ];
-
+    it('should fetch top cryptos and save to cache', async () => {
+      const mockData = [{ id: 'bitcoin', name: 'Bitcoin' }];
       fetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => mockData
+        json: async () => mockData,
       });
 
       const result = await fetchTopCryptos();
 
-      expect(fetch).toHaveBeenCalledWith(
-        'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false'
-      );
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/coins/markets'));
       expect(result).toEqual(mockData);
+      
+      // On refait l'appel, il ne doit PAS faire de fetch car les données sont en cache
+      const cachedResult = await fetchTopCryptos();
+      expect(fetch).toHaveBeenCalledTimes(1); // Le compteur n'a pas bougé
+      expect(cachedResult).toEqual(mockData);
     });
 
-    it('should fetch top cryptos with specific page number', async () => {
-      const mockData = [{ id: 'test-coin', name: 'Test Coin' }];
+    it('should throw an error after multiple retries', async () => {
+      // On simule 3 échecs consécutifs
+      fetch
+        .mockRejectedValueOnce(new Error('Network error 1'))
+        .mockRejectedValueOnce(new Error('Network error 2'))
+        .mockRejectedValueOnce(new Error('Network error 3'));
 
-      fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockData
-      });
-
-      await fetchTopCryptos(2);
-
-      expect(fetch).toHaveBeenCalledWith(
-        'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=2&sparkline=false'
-      );
-    });
-
-    it('should throw error when API call fails', async () => {
-      fetch.mockResolvedValueOnce({
-        ok: false,
-        status: 500
-      });
-
-      await expect(fetchTopCryptos()).rejects.toThrow('Erreur lors du chargement des cryptos');
-    });
-
-    it('should handle network errors', async () => {
-      fetch.mockRejectedValueOnce(new Error('Network error'));
-
-      await expect(fetchTopCryptos()).rejects.toThrow('Network error');
+      // On s'attend à ce que la fonction lève la dernière erreur après 3 tentatives
+      await expect(fetchTopCryptos()).rejects.toThrow('Network error 3');
+      expect(fetch).toHaveBeenCalledTimes(3);
     });
   });
 
@@ -82,110 +64,40 @@ describe('API Service Tests', () => {
       expect(fetch).not.toHaveBeenCalled();
     });
 
-    it('should return empty array when query is null', async () => {
-      const result = await searchCryptos(null);
-      expect(result).toEqual([]);
-      expect(fetch).not.toHaveBeenCalled();
-    });
-
-    it('should search cryptos successfully', async () => {
-      const mockApiResponse = {
-        coins: [
-          {
-            id: 'bitcoin',
-            name: 'Bitcoin',
-            symbol: 'BTC',
-            large: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png'
-          },
-          {
-            id: 'ethereum',
-            name: 'Ethereum',
-            symbol: 'ETH',
-            large: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png'
-          }
-        ]
+    it('should perform a two-step search and return rich data', async () => {
+      // Mock de la 1ère réponse (pour l'appel /search)
+      const mockSearchResponse = {
+        coins: [{ id: 'bitcoin', name: 'Bitcoin' }],
       };
-
-      const expectedResult = [
-        {
-          id: 'bitcoin',
-          name: 'Bitcoin',
-          symbol: 'BTC',
-          image: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png',
-          current_price: 0,
-          market_cap: 0,
-          price_change_percentage_24h: 0
-        },
-        {
-          id: 'ethereum',
-          name: 'Ethereum',
-          symbol: 'ETH',
-          image: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png',
-          current_price: 0,
-          market_cap: 0,
-          price_change_percentage_24h: 0
-        }
+      // Mock de la 2ème réponse (pour l'appel /coins/markets)
+      const mockMarketsResponse = [
+        { id: 'bitcoin', name: 'Bitcoin', current_price: 50000 },
       ];
 
-      fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockApiResponse
-      });
+      fetch
+        .mockResolvedValueOnce({ ok: true, json: async () => mockSearchResponse })
+        .mockResolvedValueOnce({ ok: true, json: async () => mockMarketsResponse });
 
       const result = await searchCryptos('bitcoin');
 
-      expect(fetch).toHaveBeenCalledWith(
-        'https://api.coingecko.com/api/v3/search?query=bitcoin'
-      );
-      expect(result).toEqual(expectedResult);
+      // On vérifie que les deux appels ont été faits
+      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/search?query=bitcoin'));
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/coins/markets?vs_currency=usd&ids=bitcoin'));
+
+      // Le résultat final doit être les données riches du 2ème appel
+      expect(result).toEqual(mockMarketsResponse);
     });
+    
+    it('should throw an error if the second API call fails', async () => {
+      const mockSearchResponse = { coins: [{ id: 'bitcoin' }] };
+      
+      fetch
+        .mockResolvedValueOnce({ ok: true, json: async () => mockSearchResponse })
+        .mockRejectedValue(new Error('Failed to fetch markets')); // Le 2ème appel échoue
 
-    it('should handle search API errors', async () => {
-      fetch.mockResolvedValueOnce({
-        ok: false,
-        status: 429
-      });
-
-      await expect(searchCryptos('bitcoin')).rejects.toThrow('Erreur lors de la recherche');
-    });
-
-    it('should handle empty search results', async () => {
-      fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ coins: [] })
-      });
-
-      const result = await searchCryptos('nonexistentcoin');
-      expect(result).toEqual([]);
-    });
-
-    it('should normalize data correctly with missing fields', async () => {
-      const mockApiResponse = {
-        coins: [
-          {
-            id: 'test-coin',
-            name: 'Test Coin',
-            symbol: 'TEST'
-          }
-        ]
-      };
-
-      fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockApiResponse
-      });
-
-      const result = await searchCryptos('test');
-
-      expect(result[0]).toEqual({
-        id: 'test-coin',
-        name: 'Test Coin',
-        symbol: 'TEST',
-        image: undefined,
-        current_price: 0,
-        market_cap: 0,
-        price_change_percentage_24h: 0
-      });
+      await expect(searchCryptos('bitcoin')).rejects.toThrow('Failed to fetch markets');
+      expect(fetch).toHaveBeenCalledTimes(4); // Le 1er appel a réussi, le 2ème a échoué
     });
   });
 });

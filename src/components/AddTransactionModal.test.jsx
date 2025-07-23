@@ -1,6 +1,10 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AddTransactionModal from './AddTransactionModal';
+import * as api from '../services/api';
+
+// Mock de l'API pour éviter les appels réels
+jest.mock('../services/api');
 
 describe('AddTransactionModal', () => {
   const mockOnClose = jest.fn();
@@ -24,15 +28,10 @@ describe('AddTransactionModal', () => {
   });
 
   it('affiche la liste déroulante si aucune crypto n\'est fournie', async () => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () =>
-          Promise.resolve([
-            { id: 'bitcoin', name: 'Bitcoin', current_price: 30000 },
-            { id: 'ethereum', name: 'Ethereum', current_price: 2000 }
-          ]),
-      })
-    );
+    api.fetchTopCryptos.mockResolvedValue([
+      { id: 'bitcoin', name: 'Bitcoin', current_price: 30000 },
+      { id: 'ethereum', name: 'Ethereum', current_price: 2000 }
+    ]);
 
     render(<AddTransactionModal onClose={mockOnClose} onAddTransaction={mockOnAddTransaction} />);
     await waitFor(() => expect(screen.getByText('Bitcoin')).toBeInTheDocument());

@@ -2,7 +2,10 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Portfolio from './Portfolio';
+import * as api from '../services/api';
 
+// Mock de l'API pour éviter les appels réels
+jest.mock('../services/api');
 // Mock le hook AVANT import
 jest.mock('../hooks/usePortfolio', () => ({
   usePortfolio: jest.fn(),
@@ -28,12 +31,9 @@ test('affiche portefeuille vide', () => {
 });
 
 test('affiche les transactions du portefeuille', async () => {
-  global.fetch = jest.fn(() =>
-    Promise.resolve({
-      json: () =>
-        Promise.resolve([{ id: 'bitcoin', current_price: 25000, image: '' }]),
-    })
-  );
+  api.fetchMarketsByIds.mockResolvedValue([
+    { id: 'bitcoin', current_price: 25000, image: '' }
+  ]);
 
   usePortfolio.mockReturnValue({
     transactions: mockTransactions,
